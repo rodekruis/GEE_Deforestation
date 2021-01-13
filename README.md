@@ -1,11 +1,11 @@
 # GEE_Deforestation Readme
 
-This script was written by Olivier Hacking for 510 global.
+This script was written by Olivier Hacking for 510 global. It calculates yearly deforestation, flow accumulation based on deforestation, and global surface water change.
 
 It can be easily adapted to encompass different areas instead of the Karonga and Chitipa Districts in Malawi.
 
 
-These variables are user account-specific and will provide errors if you run the script:
+These variables are user account-specific and will provide errors if you run the script, please re-upload/ change the paths:
 
 1. lakemalawi
 2. districts
