@@ -16,9 +16,12 @@ Variables 1 and 2 are provided in this repository in shp format:
 1: malawi_lake.zip
 2: malawi_district_boundaries.zip
 
-Variables 3 and 4 are both calculated in ArcGIS Pro, you can do this too by running the export functions
-in the GEE script in Chapter: [6] Exporting and using those as inputs for the flow accumulation tool
-in ArcGIS Pro, or other software.
+Variables 3 and 4 are also provided in this repository, in tiff format:
+3: flowacc_defo.tif
+4. flowacc_bare.tif
+
+Both are calculated in ArcGIS Pro, you can do this too by running the export functions in the GEE script in Chapter:
+[6] Exporting and using those as inputs for the flow accumulation tool in ArcGIS Pro, or other software.
 
 flowacc_defo: flow accumulation with deforestation weight raster
 flowacc_bare: flow accumulation raster
