@@ -21,6 +21,6 @@ in the GEE script in Chapter: [6] Exporting and using those as inputs for the fl
 in ArcGIS Pro, or other software.
 
 flowacc_defo: flow accumulation with deforestation weight raster
-flowacc_bare: flow accumulation raster
+ flowacc_bare: flow accumulation raster
 
 Good luck and have fun with the script =)
