@@ -17,7 +17,7 @@ Variables 1 and 2 are provided in this repository in shp format:
 1: malawi_lake.zip
 2: malawi_district_boundaries.zip
 
-Variables 3 and 4 are also provided in this repository, in tiff format:
+Variables 3 and 4 are also provided in this repository, in tif format:
 
 3: flowacc_defo.tif
 4. flowacc_bare.tif
