@@ -1,4 +1,4 @@
-# GEE_Deforestation
+# GEE_Deforestation Readme
 
 This script was written by Olivier Hacking for 510 global.
 
