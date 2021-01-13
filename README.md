@@ -13,10 +13,12 @@ These variables are user account-specific and will provide errors if you run the
 4. flowacc_bare
 
 Variables 1 and 2 are provided in this repository in shp format:
+
 1: malawi_lake.zip
 2: malawi_district_boundaries.zip
 
 Variables 3 and 4 are also provided in this repository, in tiff format:
+
 3: flowacc_defo.tif
 4. flowacc_bare.tif
 
