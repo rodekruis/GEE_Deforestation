@@ -1,0 +1,759 @@
+//Imports
+
+var gfc = ee.Image("UMD/hansen/global_forest_change_2018_v1_6"),
+    riverflow = ee.Image("WWF/HydroSHEDS/15ACC"),
+    lakemalawi = ee.FeatureCollection("users/olivierhacking/lake_malawi"),
+    rivers = ee.FeatureCollection("WWF/HydroSHEDS/v1/FreeFlowingRivers"),
+    basins = ee.FeatureCollection("WWF/HydroSHEDS/v1/Basins/hybas_12"),
+    AOI = 
+    /* color: #00ff00 */
+    /* shown: false */
+    ee.Geometry.Polygon(
+        [[[32.905336946071664, -9.225369005370565],
+          [32.82705935818104, -9.337859818751223],
+          [32.883364289821664, -9.344635218597244],
+          [32.90671023708729, -9.373090457163865],
+          [32.96713504177479, -9.385284845768654],
+          [32.960268586696664, -9.447605010189854],
+          [33.001467317165414, -9.480115406193313],
+          [33.053652375759164, -9.481469939255547],
+          [33.06416398187394, -9.558201329398218],
+          [33.038071452577064, -9.600179748670318],
+          [33.09712296624894, -9.647568485571096],
+          [33.10810929437394, -9.58122239564936],
+          [33.13282853265519, -9.593409387125737],
+          [33.19874650140519, -9.57851411587775],
+          [33.22895890374894, -9.606949974901685],
+          [33.23994523187394, -9.677352283847593],
+          [33.24269181390519, -9.726083710356773],
+          [33.28389054437394, -9.755860532001352],
+          [33.34156876703019, -9.774808033773834],
+          [33.39375382562394, -9.895234683307446],
+          [33.364914714295814, -9.943934077867892],
+          [33.345688640077064, -10.05348113460518],
+          [33.370407878358314, -10.077819897573457],
+          [33.45143204828019, -10.150825145246998],
+          [33.57886708280755, -10.215151573596065],
+          [33.55689442655755, -10.275964264133837],
+          [33.59534657499505, -10.417814928885493],
+          [33.65577137968255, -10.4286199632427],
+          [33.6530247976513, -10.48128912849355],
+          [33.72031605741692, -10.57445107087446],
+          [33.77524769804192, -10.54205011133862],
+          [33.81369984647942, -10.537999751411064],
+          [33.90433705351067, -10.662186465752606],
+          [34.0045872976513, -10.662186465752606],
+          [34.18311512968255, -10.72561016442225],
+          [34.25315297147942, -10.450228906531832],
+          [34.25040638944817, -10.386748369501824],
+          [34.03342640897942, -10.127290499948417],
+          [33.9496556570263, -9.973137683110695],
+          [33.94553578397942, -9.905503715638428],
+          [33.90983021757317, -9.850033452716453],
+          [33.8892308523388, -9.764780501229133],
+          [33.94690907499505, -9.706579429196927],
+          [33.92493641874505, -9.674090708136312],
+          [33.81919301054192, -9.609103854054046],
+          [33.76426136991692, -9.596917426909672],
+          [33.70932972929192, -9.561709732936439],
+          [33.62281239530755, -9.525144039336007],
+          [33.49784291288567, -9.492637912588453],
+          [33.4442845632763, -9.44658228959461],
+          [33.40995228788567, -9.389681547287433],
+          [33.3838597585888, -9.338191868568686],
+          [33.32618153593255, -9.290760430906419],
+          [33.28223622343255, -9.204012067703703],
+          [33.18885243437005, -9.152495142698191],
+          [33.11744130155755, -9.18910004359761],
+          [33.04740345976067, -9.224345632406624],
+          [33.01169789335442, -9.202656455119252],
+          [32.89634144804192, -9.195878314266562]]]),
+    districts = ee.FeatureCollection("users/olivierhacking/districts"),
+    direction = ee.Image("WWF/HydroSHEDS/03DIR"),
+    deforestation_export = ee.Image("users/olivierhacking/deforestation_export"),
+    flowacc_defo = ee.Image("users/olivierhacking/flowacc_defo"),
+    flowacc_bare = ee.Image("users/olivierhacking/flowacc"),
+    elevation = ee.Image("USGS/SRTMGL1_003"),
+    gsw = ee.Image("JRC/GSW1_0/GlobalSurfaceWater"),
+    roi = 
+    /* color: #da2dff */
+    /* shown: false */
+    ee.Geometry.MultiPolygon(
+        [[[[34.17259746991203, -10.694660298586632],
+           [34.17105251751945, -10.696347090249528],
+           [34.16899258099601, -10.697527838832611],
+           [34.16676098309562, -10.699720645434258],
+           [34.16521603070304, -10.702756813011991],
+           [34.16470104657218, -10.705118255661043],
+           [34.1657310148339, -10.70984108575847],
+           [34.166932644472574, -10.714732510741044],
+           [34.16899258099601, -10.717937194613567],
+           [34.171910824404215, -10.716250523119633],
+           [34.17585903607414, -10.714901179158938],
+           [34.179120602236246, -10.713045821394926],
+           [34.182382168398355, -10.711865133263247],
+           [34.18667370282218, -10.70984108575847],
+           [34.18598705731437, -10.706804989145946],
+           [34.185128750429605, -10.704106211064163],
+           [34.186158718691324, -10.700395351967872],
+           [34.188905300722574, -10.697359160745016],
+           [34.19096523724601, -10.694491618904499],
+           [34.19371181927726, -10.691455368590589],
+           [34.19302517376945, -10.68993723204153],
+           [34.191136898622965, -10.688756453920256],
+           [34.188905300722574, -10.69027459637535],
+           [34.185643734560465, -10.690611960334184],
+           [34.18444210492179, -10.687744354732029],
+           [34.18392712079093, -10.685720146233386],
+           [34.181867184267496, -10.685045407068325],
+           [34.179635586367105, -10.682683808184475],
+           [34.17757564984367, -10.683021180577896],
+           [34.17551571332023, -10.685382776838274],
+           [34.174342943973635, -10.687575671205941],
+           [34.17279799158106, -10.68993723204153],
+           [34.17279799158106, -10.69280481692536]]],
+         [[[34.19251018963859, -10.686394883899084],
+           [34.193883480654215, -10.684708036923567],
+           [34.19422680340812, -10.681503001856488],
+           [34.1931968351464, -10.678466621651715],
+           [34.19268185101554, -10.674586758346589],
+           [34.19251018963859, -10.67121292391234],
+           [34.193883480654215, -10.667501662797102],
+           [34.19182354413078, -10.665814710956395],
+           [34.1902785917382, -10.664296446301744],
+           [34.18581539593742, -10.66395905312739],
+           [34.18392712079093, -10.665646015257817],
+           [34.180150570497965, -10.665983406561441],
+           [34.17723232708976, -10.665646015257817],
+           [34.176374020204996, -10.66817644091383],
+           [34.17551571332023, -10.67121292391234],
+           [34.17534405194328, -10.673405920553591],
+           [34.175172390566324, -10.676273661521881],
+           [34.17620235882804, -10.680153503289743],
+           [34.179120602236246, -10.678803998728554],
+           [34.18169552289054, -10.679816127711403],
+           [34.18324047528312, -10.681840375561444],
+           [34.18598705731437, -10.683695924240492],
+           [34.18804699383781, -10.685888830790383],
+           [34.190106930361246, -10.684708036923567]]],
+         [[[34.1626081902724, -10.276583833178407],
+           [34.16037659237201, -10.27371239109816],
+           [34.15917496273334, -10.26932072334801],
+           [34.154025121424745, -10.266787041132666],
+           [34.147501989100526, -10.262395277219857],
+           [34.144755407069276, -10.258510204490314],
+           [34.139777227137635, -10.255638598349865],
+           [34.13685898372943, -10.251584521821803],
+           [34.134799047205995, -10.254287245272893],
+           [34.13170914242084, -10.256483191094619],
+           [34.12793259212787, -10.256989945660138],
+           [34.127074285243104, -10.25969262297774],
+           [34.12638763973529, -10.263070937174165],
+           [34.12484268734271, -10.26509790838069],
+           [34.12724594662006, -10.268307252897525],
+           [34.131022496913026, -10.271347654504954],
+           [34.13497070858295, -10.274388026875732],
+           [34.13840393612201, -10.277090555543177],
+           [34.15059189388568, -10.288238241921666],
+           [34.15230850765521, -10.286042516636295],
+           [34.15591339657123, -10.281988829838072],
+           [34.15814499447162, -10.281651020256138]]],
+         [[[34.15831665584857, -10.285704711390755],
+           [34.15608505794818, -10.286887028168815],
+           [34.15265183040912, -10.290940652073973],
+           [34.15642838070209, -10.29499422390803],
+           [34.1596899468642, -10.295163121604148],
+           [34.16243652889545, -10.29431863221923],
+           [34.16329483578021, -10.292291848471976],
+           [34.16569809505756, -10.292629646667374],
+           [34.16792969295795, -10.291447351401262],
+           [34.17307953426654, -10.292122949238646],
+           [34.17565445492084, -10.291278451715899],
+           [34.175997777674745, -10.287393734003924],
+           [34.17479614803607, -10.284522390185208],
+           [34.17393784115131, -10.281651020256138],
+           [34.16741470882709, -10.280975400008398],
+           [34.16535477230365, -10.279117436876223]]],
+         [[[34.174967809413026, -10.293929842222315],
+           [34.17290787288959, -10.29460543474377],
+           [34.1706762749892, -10.293592045419034],
+           [34.16792969295795, -10.294098740488323],
+           [34.16466812679584, -10.295449923360865],
+           [34.16295151302631, -10.296969997173836],
+           [34.1571150262099, -10.298321167745783],
+           [34.15831665584857, -10.302036856963582],
+           [34.16157822201068, -10.305752502382076],
+           [34.16243652889545, -10.308961433620677],
+           [34.17445282528217, -10.306765852619959],
+           [34.17393784115131, -10.30305021914936],
+           [34.17513947078998, -10.299503437246935]]],
+         [[[33.936768780344124, -9.706789972848506],
+           [33.936768780344124, -9.704251906443794],
+           [33.93608213483631, -9.700021753045469],
+           [33.936768780344124, -9.696299173893804],
+           [33.93814207135975, -9.692407342412356],
+           [33.93779874860584, -9.687161758979062],
+           [33.93779874860584, -9.68496197378401],
+           [33.9383137327367, -9.681577660724216],
+           [33.93814207135975, -9.678362531728268],
+           [33.939000378244515, -9.674978152175978],
+           [33.94209028302967, -9.67142451696572],
+           [33.946210156076546, -9.667870844193532],
+           [33.94844175397694, -9.6600864774083],
+           [33.95084501325428, -9.656701913950434],
+           [33.935223827951546, -9.65162500497992],
+           [33.93041730939686, -9.66160951986231],
+           [33.91994596540272, -9.677854876968588],
+           [33.91496778547108, -9.69359181764375],
+           [33.92131925641834, -9.697991260450397],
+           [33.921490917795296, -9.701375407942331],
+           [33.92389417707264, -9.70594395285021],
+           [33.93110395490467, -9.707974397256177],
+           [33.93591047345936, -9.70966642485802]]],
+         [[[33.905526409738656, -9.71172195461871],
+           [33.90810133039295, -9.714598364257586],
+           [33.91119123517811, -9.715782761041567],
+           [33.91496778547108, -9.721366289409154],
+           [33.91857267438709, -9.721366289409154],
+           [33.92217756330311, -9.721366289409154],
+           [33.92681242048084, -9.72001271533236],
+           [33.93144727765858, -9.717982343947096],
+           [33.93591047345936, -9.714090764352742],
+           [33.930245648019906, -9.71138355185979],
+           [33.924237499826546, -9.709691532934665],
+           [33.920289288156624, -9.707830302241993],
+           [33.91908765851795, -9.704277014926328],
+           [33.91908765851795, -9.699877654611107],
+           [33.914281139963265, -9.696493491999323]]],
+         [[[33.89265180646717, -9.722212270425288],
+           [33.882352123849984, -9.729995195336691],
+           [33.872052441232796, -9.7391314410864],
+           [33.868104229562874, -9.749451714217239],
+           [33.87291074811756, -9.749620896362664],
+           [33.87514234601795, -9.752327799014756],
+           [33.882352123849984, -9.752496979700764],
+           [33.887845287912484, -9.752835340815217],
+           [33.89093519269764, -9.748267436795953],
+           [33.90071989118397, -9.737101185853605],
+           [33.908787975900765, -9.730671962850922],
+           [33.91496778547108, -9.726103755532092],
+           [33.91548276960194, -9.724750200632288],
+           [33.91222120343983, -9.722550662232527],
+           [33.91067625104725, -9.72001271533236],
+           [33.90895963727772, -9.717136352233103],
+           [33.90621305524647, -9.718320740033732],
+           [33.9053547483617, -9.715444362388157],
+           [33.90295148908436, -9.712060357035568]]],
+         [[[33.902779827707406, -9.81508792839096],
+           [33.90483976423084, -9.808998516461836],
+           [33.90020490705311, -9.80257068247916],
+           [33.89625669538319, -9.799187561912087],
+           [33.896943340891, -9.791744575232627],
+           [33.894540081613656, -9.787346368297003],
+           [33.89522672712147, -9.779903116201133],
+           [33.895055065744515, -9.77584309025314],
+           [33.89213682233631, -9.77059881670848],
+           [33.8888752561742, -9.773136378747942],
+           [33.88698698102772, -9.77618142764236],
+           [33.88424039899647, -9.77888811436236],
+           [33.883553753488656, -9.781594779044855],
+           [33.87874723493397, -9.785823898479268],
+           [33.87823225080311, -9.789207155263671],
+           [33.87823225080311, -9.793605337551245],
+           [33.87926221906483, -9.796311882302211],
+           [33.8778889280492, -9.799864188786044],
+           [33.87874723493397, -9.804431384080301],
+           [33.88097883283436, -9.810351728785024],
+           [33.88218046247303, -9.814918779571109],
+           [33.88252378522694, -9.82151551951694],
+           [33.886815319650765, -9.822022955606311],
+           [33.89248014509022, -9.819654913866632],
+           [33.896943340891, -9.815257077124416]]],
+         [[[33.881837139719124, -9.837922225422284],
+           [33.88664365827381, -9.832848073437749],
+           [33.89213682233631, -9.832340653954919],
+           [33.895055065744515, -9.834877743580082],
+           [33.90071989118397, -9.834708604877573],
+           [33.90192152082264, -9.833862910066795],
+           [33.90123487531483, -9.829972686071194],
+           [33.90089155256092, -9.825913273107128],
+           [33.90071989118397, -9.822699535848516],
+           [33.90260816633045, -9.817794297758459],
+           [33.89814497052967, -9.817963445109479],
+           [33.89488340436756, -9.821177228358456],
+           [33.89093519269764, -9.824052692183026],
+           [33.88647199689686, -9.82523669943628],
+           [33.882352123849984, -9.82388354794382]]],
+         [[[33.89150031432981, -9.834724041823048],
+           [33.88772376403684, -9.83523145764716],
+           [33.88377555236692, -9.838445073107156],
+           [33.88600715026731, -9.853497908172093],
+           [33.88720877990598, -9.85975562629317],
+           [33.890813668822, -9.864660241246932],
+           [33.89596351013059, -9.87041038649345],
+           [33.91072638854856, -9.862799878649792],
+           [33.91003974304075, -9.859924752161694],
+           [33.908838113402076, -9.855358323260232],
+           [33.90672803937733, -9.852155340179987],
+           [33.90346647321522, -9.847927067847817],
+           [33.90192152082264, -9.842853069550303],
+           [33.90209318219959, -9.837271581378001],
+           [33.894540081613656, -9.837271581378001]]],
+         [[[33.94391110607425, -9.904545676503398],
+           [33.9408212012891, -9.900487182256827],
+           [33.936358005488316, -9.900825392027434],
+           [33.93052151867191, -9.89659774485302],
+           [33.92622998424808, -9.900656287185685],
+           [33.92245343395511, -9.903023747042235],
+           [33.919191867793, -9.903192850664242],
+           [33.91953519054691, -9.907082209918538],
+           [33.92125180431644, -9.91266251438841],
+           [33.9246850318555, -9.911986118904029],
+           [33.92794659801761, -9.91046422396261],
+           [33.930178195918, -9.90843501972084],
+           [33.932409793818394, -9.908942321958298],
+           [33.935156375849644, -9.908096817793314],
+           [33.93893292614261, -9.907758615517084],
+           [33.94133618541996, -9.905222087331513]]],
+         [[[33.94219449230472, -9.907082209918538],
+           [33.94133618541996, -9.909787823943699],
+           [33.9382462806348, -9.910126024127544],
+           [33.934126407587925, -9.91215521790595],
+           [33.930864841425816, -9.911817019814922],
+           [33.928118259394566, -9.91384620312826],
+           [33.92605832287113, -9.918750010942341],
+           [33.926401645625035, -9.930079217255447],
+           [33.926916629755894, -9.936504562994957],
+           [33.92108014293949, -9.945127854925133],
+           [33.915930301630894, -9.958823203729304],
+           [33.93807461925785, -9.961190242817809],
+           [33.93979123302738, -9.956456147470334],
+           [33.94270947643558, -9.948678556059841],
+           [33.94476941295902, -9.940224442312564],
+           [33.94442609020511, -9.93447552007881],
+           [33.944597751582066, -9.929741037668746],
+           [33.94442609020511, -9.924668301942349],
+           [33.944597751582066, -9.921117340173868],
+           [33.94768765636722, -9.91638266460667],
+           [33.94700101085941, -9.911309722024313],
+           [33.94579938122074, -9.907420412892149]]],
+         [[[33.92846158214847, -9.895413993890388],
+           [33.92331174083988, -9.890340727161913],
+           [33.923655063593785, -9.885943832640853],
+           [33.92108014293949, -9.882561566069965],
+           [33.91850522228519, -9.877657217759888],
+           [33.91781857677738, -9.874951339123342],
+           [33.91575864025394, -9.871061599611929],
+           [33.91284039684574, -9.87410574748711],
+           [33.909407169306675, -9.878164567527225],
+           [33.90648892589847, -9.88120864970141],
+           [33.903399021113316, -9.882223337499555],
+           [33.90872052379886, -9.892370043254274],
+           [33.90957883068363, -9.89659774485302],
+           [33.91249707409183, -9.899979866947568],
+           [33.9162736243848, -9.902516435653395],
+           [33.91833356090824, -9.900318077240858],
+           [33.92159512707035, -9.900825392027434],
+           [33.92485669323246, -9.897105065387992],
+           [33.926401645625035, -9.897612385139224]]]]);
+
+
+
+// [0] Study area
+
+var basinsAOI = basins.filterBounds(AOI);
+var studygeo = basinsAOI.geometry();
+var studyarea = studygeo.difference(lakemalawi, ee.ErrorMargin(1));
+
+
+
+// [1] District yearly deforestation
+
+// Define districts
+var karonga = ee.Feature(districts.filterMetadata('DISTRICT', 'equals', 'Karonga').first());
+var chitipa = ee.Feature(districts.filterMetadata('DISTRICT', 'equals', 'Chitipa').first());
+
+// Yearly forest loss
+var lossImage = gfc.select(['loss']);
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea());
+var lossYear = gfc.select('lossyear');
+
+// Total loss
+var losstotal = gfc.select('loss');
+var karongaloss = losstotal.clip(karonga);
+var chitipaloss = losstotal.clip(chitipa);
+var studyloss = losstotal.clip(studyarea);
+
+// Karonga dictionary
+var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
+  reducer: ee.Reducer.sum().group({
+    groupField: 1
+    }),
+  geometry: karonga.geometry(),
+  scale: 30,
+  maxPixels: 1e9
+});
+
+var statsFormatted = ee.List(lossByYear.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
+  });
+var statsDictionary = ee.Dictionary(statsFormatted.flatten());
+//print('Karonga deforestation', statsDictionary);
+
+// Chitipa dictionary
+var lossByYear2 = lossAreaImage.addBands(lossYear).reduceRegion({
+  reducer: ee.Reducer.sum().group({
+    groupField: 1
+    }),
+  geometry: chitipa.geometry(),
+  scale: 30,
+  maxPixels: 1e9
+});
+
+var statsFormatted2 = ee.List(lossByYear2.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
+  });
+var statsDictionary2 = ee.Dictionary(statsFormatted2.flatten());
+//print('Chitipa deforestation', statsDictionary2);
+
+// Study area dictionary
+var lossByYear3 = lossAreaImage.addBands(lossYear).reduceRegion({
+  reducer: ee.Reducer.sum().group({
+    groupField: 1
+    }),
+  geometry: studyarea,
+  scale: 30,
+  maxPixels: 1e9
+});
+
+var statsFormatted3 = ee.List(lossByYear3.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
+  });
+var statsDictionary3 = ee.Dictionary(statsFormatted3.flatten());
+//print('Study area deforestation', statsDictionary3);
+
+// Borders
+var empty = ee.Image().byte();
+var karongaborder = empty.paint({
+  featureCollection: karonga,
+  width: 3});
+
+var chitipaborder = empty.paint({
+  featureCollection: chitipa,
+  width: 3});
+
+var studyborder = empty.paint({
+  featureCollection: studyarea,
+  width: 3}); 
+
+
+
+// [2] Forest cover in 2000 and 2000 - 2012 gain
+
+// Select tree cover band
+var treecover = gfc.select('treecover2000');
+
+// Forest cover percentage: 30% or more
+var cc = ee.Number(30);
+var forestcover = treecover.gte(cc).selfMask();
+
+// Clip to districts
+var forestcoverstudy = forestcover.clip(studyarea);
+var forestcoverkaronga = forestcover.clip(karonga);
+var forestcoverchitipa = forestcover.clip(chitipa);
+var green = {palette: ['#96ED89']};
+
+// Forest gain
+var gaintotal = gfc.select(['gain']);
+var studygain = gaintotal.clip(studyarea);
+
+
+
+// [3] River flow accumulation
+
+// Unweighted flow accumulation - max pixel value 477371, mask input pixels <477
+var flowaccbare = flowacc_bare.updateMask(flowacc_bare.gt(477));
+
+// Weighted flow accumulation - max pixel value 22080, mask input pixels <22
+var flowaccdefo = flowacc_defo.updateMask(flowacc_defo.gt(22));
+
+var flowAccumulationVisbare = {
+  min: 0.0,
+  max: 47737.0,
+  palette: [
+    '000000', '023858', '006837', '1a9850', '66bd63', 'a6d96a', 'd9ef8b',
+    'ffffbf', 'fee08b', 'fdae61', 'f46d43', 'd73027'
+  ],
+};
+
+var flowAccumulationVisdefo = {
+  min: 0.0,
+  max: 1800, //2208
+  palette: [
+    '000000', '023858', '006837', '1a9850', '66bd63', 'a6d96a', 'd9ef8b',
+    'ffffbf', 'fee08b', 'fdae61', 'f46d43', 'd73027'
+  ],
+};
+
+
+// [4] Streamflow direction
+
+var drainageDirection = direction.select('b1');
+var drainageDirectionkaronga = drainageDirection.clip(karonga);
+var drainageDirectionchitipa = drainageDirection.clip(chitipa);
+var drainageDirectionstudy = drainageDirection.clip(studyarea);
+
+var drainageDirectionVis = {
+  min: 1.0,
+  max: 128.0,
+  palette: [
+    '000000', '023858', '006837', '1a9850', '66bd63', 'a6d96a', 'd9ef8b',
+    'ffffbf', 'fee08b', 'fdae61', 'f46d43', 'd73027'
+  ],
+};
+
+
+
+// [5] Reprojection of deforestation data
+
+//Get drainage direction projection
+var hydroProjection = drainageDirectionstudy.projection();
+
+// Get the forest cover data at HYDRO scale and projection.
+var lossresample = studyloss
+    // Force the next reprojection to aggregate instead of resampling.
+    .reduceResolution({
+      reducer: ee.Reducer.mean(),
+      maxPixels: 1024
+    })
+    // Request the data at the scale and projection of the HYDRO image.
+    .reproject({
+      crs: hydroProjection
+    });
+
+// Check pixel resolution
+//var scale = lossresample.projection().nominalScale();
+//print('loss resample res',scale);
+  
+
+
+// [6] Exporting
+
+Export.image.toDrive({
+  image: lossresample,
+  description: 'deforestation_export',
+  crs: hydroProjection,
+  region: studyarea,
+  scale: 92.76624232772426
+});
+  
+Export.image.toDrive({
+  image: drainageDirectionstudy,
+  description: 'drainage_export',
+  crs: hydroProjection,
+  region: studyarea,
+  scale: 92.76624232772426
+});
+
+
+
+// [7] Elevation
+
+//Select elevation band
+var elev = elevation.select('elevation');
+
+//Map it
+var elevationVis = {
+  min: 0.0,
+  max: 2300.0,
+  palette: ['0000ff', '00ffff', 'ffff00', 'ff0000', 'ffffff'],
+};
+
+
+
+// [8] Pixel counting
+
+var gainmask = studygain.mask(studygain);
+var lossmask = studyloss.mask(studyloss);
+
+var gainpixels = gainmask.reduceRegion({
+  reducer: ee.Reducer.count(),
+  geometry: studyarea,
+  maxPixels: 1e12
+  });
+
+var losspixels = lossmask.reduceRegion({
+  reducer: ee.Reducer.count(),
+  geometry: studyarea,
+  maxPixels: 1e12
+  });
+
+//print(gainpixels, 'Total gain pixels');
+//print(losspixels, 'Total loss pixels')
+
+var maxbare = flowaccbare.reduceRegion({
+  reducer: ee.Reducer.max(),
+  maxPixels: 1e9
+});
+
+var maxdefo = flowaccdefo.reduceRegion({
+  reducer: ee.Reducer.max(),
+  maxPixels: 1e9
+});
+
+//print('Max deforestation-weighted flow acc value', 
+//print('Max unweighted flow acc value', maxbare)
+
+
+
+// [9] Global Surface Water
+
+var change = gsw.select("change_abs");
+
+var VIS_CHANGE = {
+    min:-50,
+    max:50,
+    palette: ['red', 'black', 'limegreen']
+};
+
+// Generate a histogram object and print it to the console tab.
+var histogram = ui.Chart.image.histogram({
+  image: change,
+  region: roi,
+  scale: 30,
+  minBucketWidth: 10
+});
+histogram.setOptions({
+  title: 'Histogram of surface water change intensity.'
+});
+//print(histogram);
+
+
+var transition = gsw.select('transition');
+var occurrence = gsw.select('occurrence');
+var VIS_WATER_MASK = {
+  palette: ['white', 'black']
+};
+var VIS_OCCURRENCE = {
+    min: 0,
+    max: 100,
+    palette: ['red', 'blue']
+};
+// Create a feature for a transition class that includes the area covered.
+function createFeature(transition_class_stats) {
+  transition_class_stats = ee.Dictionary(transition_class_stats);
+  var class_number = transition_class_stats.get('transition_class_value');
+  var result = {
+      transition_class_number: class_number,
+      transition_class_name: lookup_names.get(class_number),
+      transition_class_palette: lookup_palette.get(class_number),
+      area_m2: transition_class_stats.get('sum')
+  };
+  return ee.Feature(null, result);   // Creates a feature without a geometry.
+}
+
+// Create a JSON dictionary that defines piechart colors based on the
+// transition class palette.
+// https://developers.google.com/chart/interactive/docs/gallery/piechart
+function createPieChartSliceDictionary(fc) {
+  return ee.List(fc.aggregate_array("transition_class_palette"))
+    .map(function(p) { return {'color': p}; }).getInfo();
+}
+
+// Calculations
+
+// Create a dictionary for looking up names of transition classes.
+var lookup_names = ee.Dictionary.fromLists(
+    ee.List(gsw.get('transition_class_values')).map(ee.String),
+    gsw.get('transition_class_names')
+);
+// Create a dictionary for looking up colors of transition classes.
+var lookup_palette = ee.Dictionary.fromLists(
+    ee.List(gsw.get('transition_class_values')).map(ee.String),
+    gsw.get('transition_class_palette')
+);
+
+// Create a water mask layer, and set the image mask so that non-water areas
+// are transparent.
+var water_mask = occurrence.gt(90).mask(1);
+
+// Summarize transition classes in a region of interest.
+var area_image_with_transition_class = ee.Image.pixelArea().addBands(transition);
+var reduction_results = area_image_with_transition_class.reduceRegion({
+  reducer: ee.Reducer.sum().group({
+    groupField: 1,
+    groupName: 'transition_class_value',
+  }),
+  geometry: roi,
+  scale: 30,
+  bestEffort: true,
+});
+//print('reduction_results', reduction_results);
+
+var roi_stats = ee.List(reduction_results.get('groups'));
+
+var transition_fc = ee.FeatureCollection(roi_stats.map(createFeature));
+//print('transition_fc', transition_fc);
+
+// Add a summary chart.
+var transition_summary_chart = ui.Chart.feature.byFeature({
+    features: transition_fc,
+    xProperty: 'transition_class_name',
+    yProperties: ['area_m2', 'transition_class_number']
+  })
+  .setChartType('PieChart')
+  .setOptions({
+    title: 'Summary of transition class areas',
+    slices: createPieChartSliceDictionary(transition_fc),
+    sliceVisibilityThreshold: 0  // Don't group small slices.
+  });
+//print(transition_summary_chart);
+
+
+
+// [10] MAPPING
+Map.setCenter(33.66, -9.94, 8.7);
+
+
+//Elevation
+//Map.addLayer(elev, elevationVis, 'Elevation');
+
+// Borders or Study Area
+Map.addLayer(studyarea, {}, 'Study Area')
+//Map.addLayer(studyborder, {palette: ['purple']}, 'Study Border');
+//Map.addLayer(karongaborder, {}, 'Karonga District');
+//Map.addLayer(chitipaborder, {}, 'Chitipa District');
+
+// Streamflow direction
+//Map.addLayer(drainageDirectionstudy, drainageDirectionVis, 'Drainage Direction');
+//Map.addLayer(drainage_export, drainageDirectionVis, 'Drainage Direction Export');
+
+// Forest cover
+//Map.addLayer(forestcoverstudy, green, 'Forest cover 2000');
+
+// Deforestation
+//Map.addLayer(studyloss.updateMask(studyloss),{palette: ['cyan']}, 'Deforestation');
+Map.addLayer(deforestation_export.updateMask(deforestation_export),{palette: ['cyan']}, 'Deforestation Export');
+
+// Deforestation resampled to Drainage Direction
+//Map.addLayer(lossresample.updateMask(lossresample),{palette: ['cyan']}, 'Deforestation resample');
+
+// Flow accumulation
+Map.addLayer(flowaccdefo, flowAccumulationVisdefo, 'Weighted Flow Accumulation');
+//Map.addLayer(flowaccbare, flowAccumulationVisbare, 'Unweighted Flow Accumulation');
+
+// Forest Gain
+//Map.addLayer(studygain.updateMask(studygain),{palette: ['green']}, 'Forest Gain 2000 - 2012');
+
+// Surface Water Change
+//Map.addLayer({
+ // eeObject: change,
+ // visParams: VIS_CHANGE,
+ // name: 'occurrence change intensity'
+//});
